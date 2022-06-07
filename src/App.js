@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import Selector from "./components/Selector";
 
 import {
@@ -11,12 +13,12 @@ import {
 
 function App() {
   const [narwhalChoices, setNarwhalChoices] = useState([
-    { name: "Noah", isFound: false },
-    { name: "Nicola", isFound: false },
-    { name: "Niall", isFound: false },
-    { name: "Nigel", isFound: false },
-    { name: "Natalie", isFound: false },
-    { name: "Nancy", isFound: false },
+    { name: "Noah", isFound: false, refCoordinates: { x: 75, y: 155 } },
+    { name: "Niall", isFound: false, refCoordinates: { x: 75, y: 185 } },
+    { name: "Nicola", isFound: false, refCoordinates: { x: 75, y: 220 } },
+    { name: "Nigel", isFound: false, refCoordinates: { x: 75, y: 255 } },
+    { name: "Natalie", isFound: false, refCoordinates: { x: 75, y: 275 } },
+    { name: "Nancy", isFound: false, refCoordinates: { x: 75, y: 305 } },
   ]);
 
   const [selectionCoordinates, setSelectionCoordinates] = useState({
@@ -41,7 +43,7 @@ function App() {
   };
 
   // Image from Where's the Narwhal? A Search and Find Book by Hachette Children's Group (Author), Dynamo (Illustrator)
-  // https://www.amazon.com.au/Wheres-Narwhal-Search-Find-Book/dp/1408359464/ref=zg_bs_4901994051_17/355-1144435-3690642?pd_rd_i=1408359464&psc=1
+  // https://www.amazon.com/Wheres-Narwhal-Search-Find-Book/dp/1408359464/ref=zg_bs_4901994051_17/355-1144435-3690642?pd_rd_i=1408359464&psc=1
   useEffect(() => {
     const loadFindNarwhalImage = async () => {
       const narwhalImageURL = await getStorageFirebaseURL(
@@ -55,27 +57,56 @@ function App() {
     loadFindNarwhalImage().catch(console.error);
   }, []);
 
+  const handleNarwhalLegendNames = (event) => {
+    // relative coordinate system for image and mouse over
+    const imagePosition = event.target.getBoundingClientRect();
+    const mouseOverAdjX = event.clientX - imagePosition.left;
+    const mouseOverAdjY = event.clientY - imagePosition.top;
+
+    // if around narwhal reference coordinates
+    const onNarwhalLegend = narwhalChoices.filter((narwhalChoice) => {
+      if (
+        mouseOverAdjX > narwhalChoice.refCoordinates.x - 10 &&
+        mouseOverAdjX < narwhalChoice.refCoordinates.x + 10 &&
+        mouseOverAdjY > narwhalChoice.refCoordinates.y - 10 &&
+        mouseOverAdjY < narwhalChoice.refCoordinates.y + 10
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    // change image title to narwhal name that is moused over
+    if (onNarwhalLegend.length !== 0) {
+      event.target.title = `${onNarwhalLegend[0].name}`;
+    }
+  };
+
   const handleFoundNarwhal = () => {};
 
   const isNarhwalFound = () => {};
 
   return (
-    <div className="App">
-      <button>Start</button>
-      <img
-        className="app-main-image"
-        src="https://www.google.com/images/spin-32.gif?a"
-        alt="A beach scene with a hidden narwhal"
-        onClick={handleCoordinateUpdateFromSelection}
-        draggable="false"
-      />
-      {isSelected && (
-        <Selector
-          narwhalChoices={narwhalChoices}
-          selectionCoordinates={selectionCoordinates}
-          handleFoundNarwhal={handleFoundNarwhal}
+    <div className="app">
+      <Header />
+      <div className="app-main">
+        <img
+          className="app-main-image"
+          src="https://www.google.com/images/spin-32.gif?a"
+          alt="A beach scene with a hidden narwhal"
+          onClick={handleCoordinateUpdateFromSelection}
+          draggable="false"
+          onMouseMove={handleNarwhalLegendNames}
         />
-      )}
+        {isSelected && (
+          <Selector
+            narwhalChoices={narwhalChoices}
+            selectionCoordinates={selectionCoordinates}
+            handleFoundNarwhal={handleFoundNarwhal}
+          />
+        )}
+      </div>
+      <Footer />
     </div>
   );
 }
