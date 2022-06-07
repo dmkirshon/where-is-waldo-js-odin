@@ -1,3 +1,12 @@
 .App {
   text-align: center;
 }
+
+.app-main-image {
+  cursor: pointer;
+}
+
+.selector-display-box {
+  position: absolute;
+  border: 5px solid red;
+}
