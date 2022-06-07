@@ -4,9 +4,12 @@
 
 .app-main-image {
   cursor: pointer;
+  user-select: none;
 }
 
 .selector-display-box {
   position: absolute;
   border: 5px solid red;
+
+  user-select: none;
 }
