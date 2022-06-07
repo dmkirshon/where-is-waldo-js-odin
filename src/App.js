@@ -10,6 +10,15 @@ import {
 } from "./firebase-sw";
 
 function App() {
+  const [narwhalChoices, setNarwhalChoices] = useState([
+    { name: "Noah", isFound: false },
+    { name: "Nicola", isFound: false },
+    { name: "Niall", isFound: false },
+    { name: "Nigel", isFound: false },
+    { name: "Natalie", isFound: false },
+    { name: "Nancy", isFound: false },
+  ]);
+
   const [selectionCoordinates, setSelectionCoordinates] = useState({
     x: 0,
     y: 0,
@@ -46,6 +55,10 @@ function App() {
     loadFindNarwhalImage().catch(console.error);
   }, []);
 
+  const handleFoundNarwhal = () => {};
+
+  const isNarhwalFound = () => {};
+
   return (
     <div className="App">
       <button>Start</button>
@@ -56,7 +69,13 @@ function App() {
         onClick={handleCoordinateUpdateFromSelection}
         draggable="false"
       />
-      {isSelected && <Selector selectionCoordinates={selectionCoordinates} />}
+      {isSelected && (
+        <Selector
+          narwhalChoices={narwhalChoices}
+          selectionCoordinates={selectionCoordinates}
+          handleFoundNarwhal={handleFoundNarwhal}
+        />
+      )}
     </div>
   );
 }
