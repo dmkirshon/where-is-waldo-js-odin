@@ -5,20 +5,16 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Selector from "./components/Selector";
 
-import {
-  firebaseApp,
-  dbFirebaseApp,
-  getStorageFirebaseURL,
-} from "./firebase-sw";
+import { getStorageFirebaseURL, getCloudStorageDocData } from "./firebase-sw";
 
 function App() {
   const [narwhalChoices, setNarwhalChoices] = useState([
-    { name: "Noah", isFound: false, refCoordinates: { x: 75, y: 155 } },
-    { name: "Niall", isFound: false, refCoordinates: { x: 75, y: 185 } },
-    { name: "Nicola", isFound: false, refCoordinates: { x: 75, y: 220 } },
-    { name: "Nigel", isFound: false, refCoordinates: { x: 75, y: 255 } },
-    { name: "Natalie", isFound: false, refCoordinates: { x: 75, y: 275 } },
-    { name: "Nancy", isFound: false, refCoordinates: { x: 75, y: 305 } },
+    { name: "Noah", isFound: false, coordinates: { x: 75, y: 160 } },
+    { name: "Niall", isFound: false, coordinates: { x: 75, y: 190 } },
+    { name: "Nicola", isFound: false, coordinates: { x: 85, y: 230 } },
+    { name: "Nigel", isFound: false, coordinates: { x: 80, y: 265 } },
+    { name: "Natalie", isFound: false, coordinates: { x: 80, y: 295 } },
+    { name: "Nancy", isFound: false, coordinates: { x: 80, y: 320 } },
   ]);
 
   const [selectionCoordinates, setSelectionCoordinates] = useState({
@@ -57,6 +53,24 @@ function App() {
     loadFindNarwhalImage().catch(console.error);
   }, []);
 
+  const isMouseNearCoordinates = (
+    mouseX,
+    mouseY,
+    coordinateX,
+    coordinateY,
+    toleranceFactor = 15
+  ) => {
+    if (
+      mouseX > coordinateX - toleranceFactor &&
+      mouseX < coordinateX + toleranceFactor &&
+      mouseY > coordinateY - toleranceFactor &&
+      mouseY < coordinateY + toleranceFactor
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   const handleNarwhalLegendNames = (event) => {
     // relative coordinate system for image and mouse over
     const imagePosition = event.target.getBoundingClientRect();
@@ -64,17 +78,14 @@ function App() {
     const mouseOverAdjY = event.clientY - imagePosition.top;
 
     // if around narwhal reference coordinates
-    const onNarwhalLegend = narwhalChoices.filter((narwhalChoice) => {
-      if (
-        mouseOverAdjX > narwhalChoice.refCoordinates.x - 10 &&
-        mouseOverAdjX < narwhalChoice.refCoordinates.x + 10 &&
-        mouseOverAdjY > narwhalChoice.refCoordinates.y - 10 &&
-        mouseOverAdjY < narwhalChoice.refCoordinates.y + 10
-      ) {
-        return true;
-      }
-      return false;
-    });
+    const onNarwhalLegend = narwhalChoices.filter((narwhalChoice) =>
+      isMouseNearCoordinates(
+        mouseOverAdjX,
+        mouseOverAdjY,
+        narwhalChoice.coordinates.x,
+        narwhalChoice.coordinates.y
+      )
+    );
 
     // change image title to narwhal name that is moused over
     if (onNarwhalLegend.length !== 0) {
