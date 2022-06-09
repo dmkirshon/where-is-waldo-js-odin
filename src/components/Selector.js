@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 const Selector = ({
   narwhalChoices,
+  imageOffset,
   selectionCoordinates,
   handleFoundNarwhal,
 }) => {
@@ -36,7 +37,7 @@ const Selector = ({
               <button
                 key={narwhalChoice.name}
                 className="narwhal-choices-button"
-                onClick={handleFoundNarwhal}
+                onClick={() => handleFoundNarwhal(narwhalChoice.name)}
               >
                 {narwhalChoice.name}
               </button>

@@ -21,20 +21,28 @@ function App() {
     x: 0,
     y: 0,
   });
+  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
   const [isSelected, setIsSelected] = useState(false);
 
   const handleCoordinateUpdateFromSelection = (event) => {
+    console.log(event.target);
     const imageCoordinates = event.target.getBoundingClientRect();
     const imageX = imageCoordinates.x;
     const imageY = imageCoordinates.y;
 
-    const xCoordinateSelection = event.clientX;
-    const yCoordinateSelection = event.clientY;
+    console.log(imageX, imageY);
+
+    const xCoordinateSelection = event.pageX;
+    const yCoordinateSelection = event.pageY;
 
     setIsSelected((wasSelected) => !wasSelected);
     setSelectionCoordinates({
       x: xCoordinateSelection,
       y: yCoordinateSelection,
+    });
+    setImageOffset({
+      x: imageX,
+      y: imageY,
     });
   };
 
@@ -93,9 +101,42 @@ function App() {
     }
   };
 
-  const handleFoundNarwhal = () => {};
+  const handleFoundNarwhal = async (name) => {
+    const narwhalFound = await isNarwhalFound(name);
+    if (narwhalFound) {
+      setNarwhalChoices((prevNarwhalChoices) => {
+        return prevNarwhalChoices.map((narwhalChoice) => {
+          if (narwhalChoice.name === name) {
+            return { ...narwhalChoice, isFound: narwhalFound };
+          }
+          return narwhalChoice;
+        });
+      });
+    }
 
-  const isNarhwalFound = () => {};
+    setIsSelected(false);
+  };
+
+  const isNarwhalFound = async (name) => {
+    const narwhalData = await getCloudStorageDocData(name, "narwhal");
+    const narwhalCoordinateX = narwhalData.coordinateX;
+    const narwhalCoordinateY = narwhalData.coordinateY;
+    console.log(
+      selectionCoordinates.x - imageOffset.x - window.scrollX,
+      selectionCoordinates.y - imageOffset.y - window.scrollY,
+      narwhalCoordinateX,
+      narwhalCoordinateY
+    );
+    const isNarwhalAtSelection = isMouseNearCoordinates(
+      selectionCoordinates.x - imageOffset.x - window.scrollX,
+      selectionCoordinates.y - imageOffset.y - window.scrollY,
+      narwhalCoordinateX,
+      narwhalCoordinateY
+    );
+    console.log(isNarwhalAtSelection);
+
+    return isNarwhalAtSelection;
+  };
 
   return (
     <div className="app">
@@ -112,6 +153,7 @@ function App() {
         {isSelected && (
           <Selector
             narwhalChoices={narwhalChoices}
+            imageOffset={imageOffset}
             selectionCoordinates={selectionCoordinates}
             handleFoundNarwhal={handleFoundNarwhal}
           />

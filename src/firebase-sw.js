@@ -24,10 +24,16 @@ export const getStorageFirebaseURL = async (location) => {
 };
 
 // Return data object from the firebase collection for a specific document with a filtered name
-export const getCloudStorageDocData = async (name) => {
-  const q = query(collection(dbFirebaseApp), where("name", "==", name));
+export const getCloudStorageDocData = async (name, collectionPath) => {
+  const q = query(
+    collection(dbFirebaseApp, collectionPath),
+    where("name", "==", name)
+  );
   const qSnapshot = await getDocs(q);
-  const docData = qSnapshot[0].data();
+  let docData;
+  qSnapshot.forEach((doc) => {
+    docData = doc.data();
+  });
 
   return docData;
 };
