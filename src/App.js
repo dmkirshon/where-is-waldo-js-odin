@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 
 import Header from "./components/Header";
@@ -8,6 +8,7 @@ import Selector from "./components/Selector";
 import { getStorageFirebaseURL, getCloudStorageDocData } from "./firebase-sw";
 
 function App() {
+  // App states
   const [narwhalChoices, setNarwhalChoices] = useState([
     { name: "Noah", isFound: false, coordinates: { x: 75, y: 160 } },
     { name: "Niall", isFound: false, coordinates: { x: 75, y: 190 } },
@@ -21,9 +22,14 @@ function App() {
     x: 0,
     y: 0,
   });
+
   const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
+
   const [isSelected, setIsSelected] = useState(false);
 
+  const [gameWon, setGameWon] = useState(false);
+
+  // Update coordinates from click on browser image for selector features
   const handleCoordinateUpdateFromSelection = (event) => {
     console.log(event.target);
     const imageCoordinates = event.target.getBoundingClientRect();
@@ -121,22 +127,40 @@ function App() {
     const narwhalData = await getCloudStorageDocData(name, "narwhal");
     const narwhalCoordinateX = narwhalData.coordinateX;
     const narwhalCoordinateY = narwhalData.coordinateY;
-    console.log(
-      selectionCoordinates.x - imageOffset.x - window.scrollX,
-      selectionCoordinates.y - imageOffset.y - window.scrollY,
-      narwhalCoordinateX,
-      narwhalCoordinateY
-    );
+
     const isNarwhalAtSelection = isMouseNearCoordinates(
       selectionCoordinates.x - imageOffset.x - window.scrollX,
       selectionCoordinates.y - imageOffset.y - window.scrollY,
       narwhalCoordinateX,
       narwhalCoordinateY
     );
-    console.log(isNarwhalAtSelection);
 
     return isNarwhalAtSelection;
   };
+
+  // Verify if game is over by checking that all narwhals have been found
+  const isGameOver = useCallback(() => {
+    const narwhalsFound = narwhalChoices.reduce(
+      (total, narwhalChoice) => (narwhalChoice.isFound ? total + 1 : total),
+      0
+    );
+    console.log(narwhalChoices.length, narwhalsFound);
+    return narwhalsFound === narwhalChoices.length;
+  }, [narwhalChoices]);
+
+  // End the game if the game is over
+  useEffect(() => {
+    if (isGameOver()) {
+      setGameWon(true);
+    }
+  }, [isGameOver, narwhalChoices]);
+
+  // Congratulate the user if they have won the game
+  useEffect(() => {
+    if (gameWon) {
+      console.log("You win!");
+    }
+  }, [gameWon]);
 
   return (
     <div className="app">
