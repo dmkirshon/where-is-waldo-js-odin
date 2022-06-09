@@ -8,6 +8,9 @@ import Selector from "./components/Selector";
 import { getStorageFirebaseURL, getCloudStorageDocData } from "./firebase-sw";
 
 function App() {
+  const IMAGE_ORIGINAL_WIDTH = 1020;
+  const IMAGE_ORIGINAL_HEIGHT = 721;
+
   // App states
   const [narwhalChoices, setNarwhalChoices] = useState([
     { name: "Noah", isFound: false, coordinates: { x: 75, y: 160 } },
@@ -25,15 +28,18 @@ function App() {
 
   const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
 
+  const [imageScale, setImageScale] = useState(1);
+
   const [isSelected, setIsSelected] = useState(false);
 
   const [gameWon, setGameWon] = useState(false);
 
   // Update coordinates from click on browser image for selector features
   const handleCoordinateUpdateFromSelection = (event) => {
-    const imageCoordinates = event.target.getBoundingClientRect();
-    const imageX = imageCoordinates.x;
-    const imageY = imageCoordinates.y;
+    const imageParameters = event.target.getBoundingClientRect();
+    const imageX = imageParameters.x;
+    const imageY = imageParameters.y;
+    const imageWidth = imageParameters.width;
 
     const xCoordinateSelection = event.pageX;
     const yCoordinateSelection = event.pageY;
@@ -47,6 +53,8 @@ function App() {
       x: imageX,
       y: imageY,
     });
+
+    setImageScale(imageWidth / IMAGE_ORIGINAL_WIDTH);
   };
 
   // Image from Where's the Narwhal? A Search and Find Book by Hachette Children's Group (Author), Dynamo (Illustrator)
@@ -128,8 +136,8 @@ function App() {
     const isNarwhalAtSelection = isMouseNearCoordinates(
       selectionCoordinates.x - imageOffset.x - window.scrollX,
       selectionCoordinates.y - imageOffset.y - window.scrollY,
-      narwhalCoordinateX,
-      narwhalCoordinateY,
+      narwhalCoordinateX * imageScale,
+      narwhalCoordinateY * imageScale,
       20
     );
 
