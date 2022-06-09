@@ -129,7 +129,8 @@ function App() {
       selectionCoordinates.x - imageOffset.x - window.scrollX,
       selectionCoordinates.y - imageOffset.y - window.scrollY,
       narwhalCoordinateX,
-      narwhalCoordinateY
+      narwhalCoordinateY,
+      20
     );
 
     return isNarwhalAtSelection;
