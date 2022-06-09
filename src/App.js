@@ -31,12 +31,9 @@ function App() {
 
   // Update coordinates from click on browser image for selector features
   const handleCoordinateUpdateFromSelection = (event) => {
-    console.log(event.target);
     const imageCoordinates = event.target.getBoundingClientRect();
     const imageX = imageCoordinates.x;
     const imageY = imageCoordinates.y;
-
-    console.log(imageX, imageY);
 
     const xCoordinateSelection = event.pageX;
     const yCoordinateSelection = event.pageY;
@@ -144,7 +141,7 @@ function App() {
       (total, narwhalChoice) => (narwhalChoice.isFound ? total + 1 : total),
       0
     );
-    console.log(narwhalChoices.length, narwhalsFound);
+
     return narwhalsFound === narwhalChoices.length;
   }, [narwhalChoices]);
 
