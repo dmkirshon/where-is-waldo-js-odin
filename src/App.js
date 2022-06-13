@@ -32,6 +32,8 @@ function App() {
 
   const [isSelected, setIsSelected] = useState(false);
 
+  const [startTime, setStartTime] = useState(new Date().getTime());
+
   const [gameWon, setGameWon] = useState(false);
 
   // Update coordinates from click on browser image for selector features
@@ -144,6 +146,12 @@ function App() {
     return isNarwhalAtSelection;
   };
 
+  const currentTimerTime = () => {
+    const currentTime = new Date().getTime();
+    const timerTime = currentTime - startTime;
+    return timerTime;
+  };
+
   // Verify if game is over by checking that all narwhals have been found
   const isGameOver = useCallback(() => {
     const narwhalsFound = narwhalChoices.reduce(
@@ -170,7 +178,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
+      <Header currentTimerTime={currentTimerTime} />
       <div className="app-main">
         <img
           className="app-main-image"
