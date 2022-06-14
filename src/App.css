@@ -3,6 +3,9 @@
   min-height: 100vh ;
   text-align: center;
   background-color: rgb(122,165,168);
+
+  display: flex;
+  flex-direction: column;
 }
 
 .app-header {
@@ -34,6 +37,8 @@
   position: absolute;
 }
 
+/* Selector Styles */
+
 .selector-display-box {
   position: absolute;
   border: 5px solid red;
@@ -51,4 +56,31 @@
 .narwhal-choices-button {
   padding: .5rem;
 
+}
+
+/* Winner Name Styles */
+
+.app-winner-name-request {
+  width: 200px;
+  height: 50px;
+  padding: 1rem;
+  position: fixed;
+  z-index: 1;
+
+  top: calc(50% - 25px);
+  left: calc(50% - 100px);
+
+  background-color: rgb(84, 113, 115);
+  border: 1px solid black;
+  box-shadow: 1px 1px 1px 1px;
+}
+
+.app-winner-name-request-input {
+  padding: 5px;
+}
+
+.app-game-won {
+  opacity: 50%;
+  z-index: 0;
+  cursor: default;
 }

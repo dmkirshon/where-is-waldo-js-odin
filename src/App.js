@@ -4,6 +4,7 @@ import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Selector from "./components/Selector";
+import WinnerNameRequest from "./components/WinnerNameRequest";
 
 import { getStorageFirebaseURL, getCloudStorageDocData } from "./firebase-sw";
 
@@ -35,6 +36,8 @@ function App() {
   const [startTime, setStartTime] = useState(new Date().getTime());
 
   const [endTime, setEndTime] = useState(0);
+
+  const [winnerName, setWinnerName] = useState("");
 
   const [gameWon, setGameWon] = useState(false);
 
@@ -154,6 +157,11 @@ function App() {
     return timerTime;
   };
 
+  const handleWinnerNameUpdate = (event) => {
+    const winnerNameUpdate = event.target.value;
+    setWinnerName(winnerNameUpdate);
+  };
+
   // Verify if game is over by checking that all narwhals have been found
   const isGameOver = useCallback(() => {
     const narwhalsFound = narwhalChoices.reduce(
@@ -182,16 +190,22 @@ function App() {
   return (
     <div className="app">
       <Header gameWon={gameWon} currentTimerTime={currentTimerTime} />
-      <div className="app-main">
+      {gameWon && (
+        <WinnerNameRequest
+          winnerName={winnerName}
+          handleWinnerNameUpdate={handleWinnerNameUpdate}
+        />
+      )}
+      <div className={`app-main ${gameWon ? "app-game-won" : ""}`}>
         <img
-          className="app-main-image"
+          className={`app-main-image ${gameWon ? "app-game-won" : ""}`}
           src="https://www.google.com/images/spin-32.gif?a"
           alt="A beach scene with a hidden narwhal"
           onClick={handleCoordinateUpdateFromSelection}
           draggable="false"
           onMouseMove={handleNarwhalLegendNames}
         />
-        {isSelected && (
+        {!gameWon && isSelected && (
           <Selector
             narwhalChoices={narwhalChoices}
             imageOffset={imageOffset}
