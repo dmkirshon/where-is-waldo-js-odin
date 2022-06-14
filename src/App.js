@@ -34,6 +34,8 @@ function App() {
 
   const [startTime, setStartTime] = useState(new Date().getTime());
 
+  const [endTime, setEndTime] = useState(0);
+
   const [gameWon, setGameWon] = useState(false);
 
   // Update coordinates from click on browser image for selector features
@@ -173,12 +175,13 @@ function App() {
   useEffect(() => {
     if (gameWon) {
       console.log("You win!");
+      setEndTime(currentTimerTime());
     }
-  }, [gameWon]);
+  }, [currentTimerTime, gameWon]);
 
   return (
     <div className="app">
-      <Header currentTimerTime={currentTimerTime} />
+      <Header gameWon={gameWon} currentTimerTime={currentTimerTime} />
       <div className="app-main">
         <img
           className="app-main-image"

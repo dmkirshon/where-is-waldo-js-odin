@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Header = ({ currentTimerTime }) => {
+const Header = ({ gameWon, currentTimerTime }) => {
   const [time, setTime] = useState("00:00");
 
   const formatTimer = (time) => {
@@ -11,17 +11,25 @@ const Header = ({ currentTimerTime }) => {
     return `${formatMinutesIfNegative}:${seconds}`;
   };
 
+  // Instantiate an interval clock to update the game time, clean up if game won
   useEffect(() => {
-    if (time === "00:00") {
-      const timeInterval = setInterval(
+    let timeInterval = null;
+
+    if (!gameWon) {
+      timeInterval = setInterval(
         () => setTime(formatTimer(currentTimerTime() / 1000)),
         1000
       );
     }
 
+    return () => clearInterval(timeInterval);
+  }, [currentTimerTime, gameWon]);
+
+  // Update timer on header with current game time
+  useEffect(() => {
     const gameInfoTimer = document.querySelector(".game-info-timer");
     gameInfoTimer.textContent = `Timer: ${time}`;
-  }, [currentTimerTime, time]);
+  }, [time]);
 
   return (
     <header className="app-header">
