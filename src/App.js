@@ -5,41 +5,67 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Selector from "./components/Selector";
 import WinnerNameRequest from "./components/WinnerNameRequest";
+import WinnerBoard from "./components/WinnerBoard";
 
-import { getStorageFirebaseURL, getCloudStorageDocData } from "./firebase-sw";
+import {
+  getStorageFirebaseURL,
+  getCloudStorageDocData,
+  updateCloudStorageWithDocData,
+} from "./firebase-sw";
 
 function App() {
   const IMAGE_ORIGINAL_WIDTH = 1020;
   const IMAGE_ORIGINAL_HEIGHT = 721;
 
   // App states
-  const [narwhalChoices, setNarwhalChoices] = useState([
-    { name: "Noah", isFound: false, coordinates: { x: 75, y: 160 } },
-    { name: "Niall", isFound: false, coordinates: { x: 75, y: 190 } },
-    { name: "Nicola", isFound: false, coordinates: { x: 85, y: 230 } },
-    { name: "Nigel", isFound: false, coordinates: { x: 80, y: 265 } },
-    { name: "Natalie", isFound: false, coordinates: { x: 80, y: 295 } },
-    { name: "Nancy", isFound: false, coordinates: { x: 80, y: 320 } },
-  ]);
+  const initialState = {
+    narwhalChoices: [
+      { name: "Noah", isFound: false, coordinates: { x: 75, y: 160 } },
+      { name: "Niall", isFound: false, coordinates: { x: 75, y: 190 } },
+      { name: "Nicola", isFound: false, coordinates: { x: 85, y: 230 } },
+      { name: "Nigel", isFound: false, coordinates: { x: 80, y: 265 } },
+      { name: "Natalie", isFound: false, coordinates: { x: 80, y: 295 } },
+      { name: "Nancy", isFound: false, coordinates: { x: 80, y: 320 } },
+    ],
+    selectionCoordinates: {
+      x: 0,
+      y: 0,
+    },
+    imageOffset: { x: 0, y: 0 },
+    imageScale: 1,
+    isSelected: false,
+    startTime: new Date().getTime(),
+    scoreTime: 0,
+    winnerName: "",
+    submittedName: false,
+    gameWon: false,
+  };
 
-  const [selectionCoordinates, setSelectionCoordinates] = useState({
-    x: 0,
-    y: 0,
-  });
+  const [narwhalChoices, setNarwhalChoices] = useState(
+    initialState.narwhalChoices
+  );
 
-  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
+  const [selectionCoordinates, setSelectionCoordinates] = useState(
+    initialState.selectionCoordinates
+  );
 
-  const [imageScale, setImageScale] = useState(1);
+  const [imageOffset, setImageOffset] = useState(initialState.imageOffset);
 
-  const [isSelected, setIsSelected] = useState(false);
+  const [imageScale, setImageScale] = useState(initialState.imageScale);
 
-  const [startTime, setStartTime] = useState(new Date().getTime());
+  const [isSelected, setIsSelected] = useState(initialState.isSelected);
 
-  const [endTime, setEndTime] = useState(0);
+  const [startTime, setStartTime] = useState(initialState.startTime);
 
-  const [winnerName, setWinnerName] = useState("");
+  const [scoreTime, setScoreTime] = useState(initialState.scoreTime);
 
-  const [gameWon, setGameWon] = useState(false);
+  const [winnerName, setWinnerName] = useState(initialState.winnerName);
+
+  const [submittedName, setSubmittedName] = useState(
+    initialState.submittedName
+  );
+
+  const [gameWon, setGameWon] = useState(initialState.gameWon);
 
   // Update coordinates from click on browser image for selector features
   const handleCoordinateUpdateFromSelection = (event) => {
@@ -136,9 +162,14 @@ function App() {
   };
 
   const isNarwhalFound = async (name) => {
-    const narwhalData = await getCloudStorageDocData(name, "narwhal");
-    const narwhalCoordinateX = narwhalData.coordinateX;
-    const narwhalCoordinateY = narwhalData.coordinateY;
+    const narwhalData = await getCloudStorageDocData("narwhal");
+
+    const chosenNarwhalData = narwhalData.reduce((chosenNarwhal, narwhal) => {
+      return narwhal.name === name ? narwhal : chosenNarwhal;
+    });
+
+    const narwhalCoordinateX = chosenNarwhalData.coordinateX;
+    const narwhalCoordinateY = chosenNarwhalData.coordinateY;
 
     const isNarwhalAtSelection = isMouseNearCoordinates(
       selectionCoordinates.x - imageOffset.x - window.scrollX,
@@ -151,15 +182,27 @@ function App() {
     return isNarwhalAtSelection;
   };
 
-  const currentTimerTime = () => {
+  const currentTimerTime = useCallback(() => {
     const currentTime = new Date().getTime();
     const timerTime = currentTime - startTime;
     return timerTime;
-  };
+  }, [startTime]);
 
+  // Update the name of the winner entered into the input
   const handleWinnerNameUpdate = (event) => {
     const winnerNameUpdate = event.target.value;
     setWinnerName(winnerNameUpdate);
+  };
+
+  // Send winner's name and time to scores collection in storage
+  const submitWinnerDataToStorage = async (event) => {
+    event.preventDefault();
+
+    const winnerData = { name: winnerName, time: scoreTime };
+
+    await updateCloudStorageWithDocData(winnerData, "scores");
+
+    setSubmittedName((submittedName) => !submittedName);
   };
 
   // Verify if game is over by checking that all narwhals have been found
@@ -183,19 +226,43 @@ function App() {
   useEffect(() => {
     if (gameWon) {
       console.log("You win!");
-      setEndTime(currentTimerTime());
+      setScoreTime(currentTimerTime());
     }
   }, [currentTimerTime, gameWon]);
+
+  const handleResetGame = () => {
+    setNarwhalChoices(initialState.narwhalChoices);
+
+    setSelectionCoordinates(initialState.selectionCoordinates);
+
+    setImageOffset(initialState.imageOffset);
+
+    setImageScale(initialState.imageScale);
+
+    setIsSelected(initialState.isSelected);
+
+    setStartTime(new Date().getTime());
+
+    setScoreTime(initialState.scoreTime);
+
+    setWinnerName(initialState.winnerName);
+
+    setSubmittedName(initialState.submittedName);
+
+    setGameWon(initialState.gameWon);
+  };
 
   return (
     <div className="app">
       <Header gameWon={gameWon} currentTimerTime={currentTimerTime} />
-      {gameWon && (
+      {gameWon && !submittedName && (
         <WinnerNameRequest
           winnerName={winnerName}
           handleWinnerNameUpdate={handleWinnerNameUpdate}
+          submitWinnerDataToStorage={submitWinnerDataToStorage}
         />
       )}
+      {submittedName && <WinnerBoard handleResetGame={handleResetGame} />}
       <div className={`app-main ${gameWon ? "app-game-won" : ""}`}>
         <img
           className={`app-main-image ${gameWon ? "app-game-won" : ""}`}

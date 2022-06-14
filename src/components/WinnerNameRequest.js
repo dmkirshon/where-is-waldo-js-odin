@@ -1,10 +1,17 @@
 import React from "react";
 
-const WinnerNameRequest = ({ winnerName, handleWinnerNameUpdate }) => {
+const WinnerNameRequest = ({
+  winnerName,
+  handleWinnerNameUpdate,
+  submitWinnerDataToStorage,
+}) => {
   return (
     <div className="app-winner-name-request">
       <p>Enter the winner name:</p>
-      <form className="app-winner-name-request-form">
+      <form
+        className="app-winner-name-request-form"
+        onSubmit={submitWinnerDataToStorage}
+      >
         <input
           className="app-winner-name-request-input"
           value={winnerName}

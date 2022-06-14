@@ -58,7 +58,7 @@
 
 }
 
-/* Winner Name Styles */
+/* Winner Styles */
 
 .app-winner-name-request {
   width: 200px;
@@ -83,4 +83,32 @@
   opacity: 50%;
   z-index: 0;
   cursor: default;
+}
+
+.app-winner-board {
+  padding: 1rem;
+  position: fixed;
+  z-index: 1;
+
+  top: calc(50% - 25px);
+  left: calc(50% - 100px);
+
+  background-color: rgb(84, 113, 115);
+  border: 1px solid black;
+  box-shadow: 1px 1px 1px 1px;
+}
+
+.app-winner-board-title {
+  text-decoration: underline;
+  font-size: x-large;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.app-winner-board-list {
+  list-style: none;
+}
+
+.app-winner-board-list-item {
+  margin-bottom: 1rem;
+  
 }

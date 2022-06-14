@@ -5,7 +5,7 @@ import {
   getDocs,
   getFirestore,
   query,
-  where,
+  addDoc,
 } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
@@ -21,17 +21,23 @@ export const getStorageFirebaseURL = async (location) => {
   return await getDownloadURL(storageRef);
 };
 
-// Return data object from the firebase collection for a specific document with a filtered name
-export const getCloudStorageDocData = async (name, collectionPath) => {
-  const q = query(
-    collection(dbFirebaseApp, collectionPath),
-    where("name", "==", name)
-  );
+// Return document data array from the specified firebase collection
+export const getCloudStorageDocData = async (collectionPath) => {
+  const q = query(collection(dbFirebaseApp, collectionPath));
   const qSnapshot = await getDocs(q);
-  let docData;
+
+  let docData = [];
+  let count = 0;
   qSnapshot.forEach((doc) => {
-    docData = doc.data();
+    docData[count] = doc.data();
+    count++;
   });
 
   return docData;
+};
+
+// Adds new document to specified firebase collection with provided data
+export const updateCloudStorageWithDocData = async (data, collectionPath) => {
+  const collectionRef = collection(dbFirebaseApp, collectionPath);
+  await addDoc(collectionRef, data);
 };
