@@ -3,7 +3,7 @@
 This project is a take on the Where's Waldo photo search game. In this version
 six narwhals are on vacation and the player needs to find all of them to win!
 
-[Live Demo](where-s-waldo-51850.web.app)
+[Live Demo](https://where-s-waldo-51850.web.app)
 
 ## Project Features
 
