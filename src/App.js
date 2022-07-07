@@ -15,7 +15,6 @@ import {
 
 function App() {
   const IMAGE_ORIGINAL_WIDTH = 1020;
-  const IMAGE_ORIGINAL_HEIGHT = 721;
 
   // App states
   const initialState = {

@@ -1,5 +1,4 @@
-import { disableNetwork } from "firebase/firestore";
-import React, { useState } from "react";
+import React from "react";
 
 const Selector = ({
   narwhalChoices,
@@ -43,6 +42,7 @@ const Selector = ({
               </button>
             );
           }
+          return null;
         })}
       </div>
     );
