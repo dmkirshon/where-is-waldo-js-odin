@@ -144,7 +144,8 @@ function App() {
         mouseOverAdjX,
         mouseOverAdjY,
         narwhalChoice.legendCoordinates.x * imageScale,
-        narwhalChoice.legendCoordinates.y * imageScale
+        narwhalChoice.legendCoordinates.y * imageScale,
+        15 * imageScale
       )
     );
 
