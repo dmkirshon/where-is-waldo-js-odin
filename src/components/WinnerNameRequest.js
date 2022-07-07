@@ -29,6 +29,7 @@ const WinnerNameRequest = ({
           value={winnerName}
           onChange={handleWinnerNameUpdate}
           autoFocus
+          maxLength={15}
         ></input>
         <button type="submit" className="app-winner-name-request-submit">
           ➡️

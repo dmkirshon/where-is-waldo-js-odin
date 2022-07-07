@@ -1,8 +1,7 @@
 .app {
-  width: 100vw;
-  min-height: 100vh ;
+  min-height: 100vh;
   text-align: center;
-  background-color: rgb(122,165,168);
+  background-color: rgb(122, 165, 168);
 
   display: flex;
   flex-direction: column;
@@ -54,8 +53,7 @@
 }
 
 .narwhal-choices-button {
-  padding: .5rem;
-
+  padding: 0.5rem;
 }
 
 /* Winner Styles */
@@ -86,12 +84,13 @@
 }
 
 .app-winner-board {
-  padding: 1rem;
+  width: 400px;
+  height: 400px;
   position: fixed;
   z-index: 1;
 
-  top: calc(50% - 25px);
-  left: calc(50% - 100px);
+  top: 4rem;
+  left: calc(50% - 200px);
 
   background-color: rgb(84, 113, 115);
   border: 1px solid black;
@@ -105,10 +104,15 @@
   margin-bottom: 1rem;
 }
 .app-winner-board-list {
-  list-style: none;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-left: 1rem;
 }
 
 .app-winner-board-list-item {
   margin-bottom: 1rem;
-  
+  text-align: start;
 }

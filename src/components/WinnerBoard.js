@@ -11,12 +11,18 @@ const WinnerBoard = ({ handleResetGame }) => {
   const getScoresData = async () => {
     const scoresData = await getCloudStorageDocData("scores");
 
-    setScores(scoresData);
+    setScores(
+      scoresData
+        .sort((a, b) => {
+          return a.time - b.time;
+        })
+        .slice(0, 10)
+    );
   };
 
   const displayScores = () => {
     return (
-      <ul className="app-winner-board-list">
+      <ol className="app-winner-board-list">
         {scores.map((score) => {
           return (
             <li
@@ -27,7 +33,7 @@ const WinnerBoard = ({ handleResetGame }) => {
             </li>
           );
         })}
-      </ul>
+      </ol>
     );
   };
 
@@ -42,10 +48,10 @@ const WinnerBoard = ({ handleResetGame }) => {
         ></img>
       ) : (
         <div>
-          {displayScores()}
           <button className="app-winner-board-reset" onClick={handleResetGame}>
             Reset Game
           </button>
+          {displayScores()}
         </div>
       )}
     </div>
