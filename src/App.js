@@ -20,12 +20,12 @@ function App() {
   // App states
   const initialState = {
     narwhalChoices: [
-      { name: "Noah", isFound: false, coordinates: { x: 75, y: 160 } },
-      { name: "Niall", isFound: false, coordinates: { x: 75, y: 190 } },
-      { name: "Nicola", isFound: false, coordinates: { x: 85, y: 230 } },
-      { name: "Nigel", isFound: false, coordinates: { x: 80, y: 265 } },
-      { name: "Natalie", isFound: false, coordinates: { x: 80, y: 295 } },
-      { name: "Nancy", isFound: false, coordinates: { x: 80, y: 320 } },
+      { name: "Noah", isFound: false, legendCoordinates: { x: 75, y: 160 } },
+      { name: "Niall", isFound: false, legendCoordinates: { x: 75, y: 190 } },
+      { name: "Nicola", isFound: false, legendCoordinates: { x: 85, y: 230 } },
+      { name: "Nigel", isFound: false, legendCoordinates: { x: 80, y: 265 } },
+      { name: "Natalie", isFound: false, legendCoordinates: { x: 80, y: 295 } },
+      { name: "Nancy", isFound: false, legendCoordinates: { x: 80, y: 320 } },
     ],
     selectionCoordinates: {
       x: 0,
@@ -128,20 +128,24 @@ function App() {
     const imagePosition = event.target.getBoundingClientRect();
     const mouseOverAdjX = event.clientX - imagePosition.left;
     const mouseOverAdjY = event.clientY - imagePosition.top;
+    const imageWidth = imagePosition.width;
+    const imageScale = imageWidth / IMAGE_ORIGINAL_WIDTH;
 
     // if around narwhal reference coordinates
     const onNarwhalLegend = narwhalChoices.filter((narwhalChoice) =>
       isMouseNearCoordinates(
         mouseOverAdjX,
         mouseOverAdjY,
-        narwhalChoice.coordinates.x,
-        narwhalChoice.coordinates.y
+        narwhalChoice.legendCoordinates.x * imageScale,
+        narwhalChoice.legendCoordinates.y * imageScale
       )
     );
 
-    // change image title to narwhal name that is moused over
+    // add text overlay to narwhal name that is moused over
     if (onNarwhalLegend.length !== 0) {
       event.target.title = `${onNarwhalLegend[0].name}`;
+    } else {
+      event.target.title = ``;
     }
   };
 
