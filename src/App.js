@@ -34,11 +34,12 @@ function App() {
     imageOffset: { x: 0, y: 0 },
     imageScale: 1,
     isSelected: false,
-    startTime: new Date().getTime(),
+    startTime: null,
     scoreTime: 0,
     winnerName: "",
     submittedName: false,
     gameWon: false,
+    imageLoaded: false,
   };
 
   const [narwhalChoices, setNarwhalChoices] = useState(
@@ -66,6 +67,8 @@ function App() {
   );
 
   const [gameWon, setGameWon] = useState(initialState.gameWon);
+
+  const [imageLoaded, setImageLoaded] = useState(initialState.imageLoaded);
 
   // Update coordinates from click on browser image for selector features
   const handleCoordinateUpdateFromSelection = (event) => {
@@ -99,6 +102,10 @@ function App() {
       );
 
       const appMainImage = document.querySelector(".app-main-image");
+      appMainImage.onload = () => {
+        setImageLoaded(true);
+        setStartTime(new Date().getTime());
+      };
       appMainImage.setAttribute("src", narwhalImageURL);
     };
 
@@ -199,9 +206,7 @@ function App() {
   };
 
   // Send winner's name and time to scores collection in storage
-  const submitWinnerDataToStorage = async (event) => {
-    event.preventDefault();
-
+  const submitWinnerDataToStorage = async () => {
     const winnerData = { name: winnerName, time: scoreTime };
 
     await updateCloudStorageWithDocData(winnerData, "scores");
@@ -258,7 +263,11 @@ function App() {
 
   return (
     <div className="app">
-      <Header gameWon={gameWon} currentTimerTime={currentTimerTime} />
+      <Header
+        imageLoaded={imageLoaded}
+        gameWon={gameWon}
+        currentTimerTime={currentTimerTime}
+      />
       {gameWon && !submittedName && (
         <WinnerNameRequest
           winnerName={winnerName}

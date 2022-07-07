@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Header = ({ gameWon, currentTimerTime }) => {
+const Header = ({ imageLoaded, gameWon, currentTimerTime }) => {
   const [time, setTime] = useState("00:00");
 
   const formatTimer = (time) => {
@@ -15,7 +15,7 @@ const Header = ({ gameWon, currentTimerTime }) => {
   useEffect(() => {
     let timeInterval = null;
 
-    if (!gameWon) {
+    if (!gameWon && imageLoaded) {
       timeInterval = setInterval(
         () => setTime(formatTimer(currentTimerTime() / 1000)),
         1000
@@ -23,7 +23,7 @@ const Header = ({ gameWon, currentTimerTime }) => {
     }
 
     return () => clearInterval(timeInterval);
-  }, [currentTimerTime, gameWon]);
+  }, [currentTimerTime, gameWon, imageLoaded]);
 
   // Update timer on header with current game time
   useEffect(() => {
